@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class WiremockTest {
-    private static final String WIREMOCK_HOST = "localhost";
-    private static final int WIREMOCK_PORT = 8080;
+    private static final String WIREMOCK_HOST = "wiremock.local";
+    private static final int WIREMOCK_PORT = 80;
 
     @BeforeAll
     public static void setup() {
@@ -52,11 +52,11 @@ public class WiremockTest {
         verify(getRequestedFor(urlEqualTo("/api/v1/user/get/1")));
     }
     @Test
-    public void testGetUserFromMinikube() throws Exception {
+    public void testGetUserFromMinikubeStub() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
         ObjectMapper objectMapper = new ObjectMapper();
         // 1. Выполняем HTTP GET-запрос через наш HttpHelper
-        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/user/get/all");
+        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/all");
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
 
         // 2. Превращаем JSON-строку в Java-объект User
@@ -74,7 +74,7 @@ public class WiremockTest {
         HttpHelper httpHelper = new HttpHelper();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/user/get/all");
+        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/course/get/all");
 
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
         List<Course> courses = objectMapper.readValue(jsonResponse, new TypeReference<List<Course>>() {});
