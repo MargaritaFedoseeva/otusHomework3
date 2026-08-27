@@ -25,6 +25,7 @@
         <base.url.property>https://petstore.swagger.io/</base.url.property>
         <proxy.host.property>192.168.0.7</proxy.host.property>
         <proxy.port.property>1081</proxy.port.property>
+        <wiremock.version>3.13.2</wiremock.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -61,6 +62,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
         </dependency>
     </dependencies>
     <build>
