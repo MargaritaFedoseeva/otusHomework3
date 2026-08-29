@@ -28,41 +28,37 @@ public class WiremockTest {
 
     @Test
     public void testWiremockInMinikube() throws Exception {
-        // 1. Создаем стаб (маппинг) удаленно внутри Minikube
+        HttpHelper httpHelper = new HttpHelper();
+
+        // Создаем стаб (маппинг) удаленно внутри Minikube
         stubFor(WireMock.get(urlEqualTo("/api/v1/user/get/1"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"name\": \"Test user\", \"score\": 11}")));
 
-        // 2. Делаем реальный запрос к вашему сервису в Minikube (как это делало бы ваше Java-приложение)
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/1"))
-                .GET()
-                .build();
+        // Выполняем HTTP GET-запрос через HttpHelper к сервису в Minikube
+        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/1");
+        assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // Проверяем ответ
+        assertEquals("{\"name\": \"Test user\", \"score\": 11}", jsonResponse);
 
-        // 3. Проверяем ответ
-        assertEquals(200, response.statusCode());
-        assertEquals("{\"name\": \"Test user\", \"score\": 11}", response.body());
-
-        // 4. Верифицируем, что запрос действительно дошел до WireMock (опционально)
+        // Верифицируем, что запрос действительно дошел до WireMock
         verify(getRequestedFor(urlEqualTo("/api/v1/user/get/1")));
     }
     @Test
     public void testGetUserFromMinikubeStub() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
         ObjectMapper objectMapper = new ObjectMapper();
-        // 1. Выполняем HTTP GET-запрос через наш HttpHelper
+
         String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/all");
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
 
-        // 2. Превращаем JSON-строку в Java-объект User
+        // JSON-строку преобразуем в Java-объект User
         User user = objectMapper.readValue(jsonResponse, User.class);
 
-        // 3. Проверяем, что поля объекта полностью соответствуют данным из стаба в Minikube
+        // Проверяем, что поля объекта полностью соответствуют данным из стаба в Minikube
         assertEquals("Test user", user.name());
         assertEquals("QA", user.course());
         assertEquals("test@test.test", user.email());
