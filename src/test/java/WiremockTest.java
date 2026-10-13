@@ -1,4 +1,5 @@
 import com.github.tomakehurst.wiremock.client.WireMock;
+import config.WireMockConfig;
 import dto.Course;
 import dto.User;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,12 +20,15 @@ public class WiremockTest {
     @BeforeAll
     public static void setup() {
         // Подключаем Java-клиент к WireMock, работающему в Minikube
-        WireMock.configureFor(WIREMOCK_HOST, WIREMOCK_PORT);
+        WireMock.configureFor(WireMockConfig.getWiremockHost(), WireMockConfig.getWiremockPort());
     }
 
     @Test
     public void testWiremockInMinikube() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
+        String url = String.format("http://%s:%d/api/v1/user/get/1",
+                WireMockConfig.getWiremockHost(),
+                WireMockConfig.getWiremockPort());
 
         // Создаем стаб (маппинг) удаленно внутри Minikube
         stubFor(WireMock.get(urlEqualTo("/api/v1/user/get/1"))
@@ -34,7 +38,7 @@ public class WiremockTest {
                         .withBody("{\"name\": \"Test user\", \"score\": 11}")));
 
         // Выполняем HTTP GET-запрос через HttpHelper к сервису в Minikube
-        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/1");
+        String jsonResponse = httpHelper.sendGetRequest(url);
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
 
         // Проверка ответа
@@ -47,8 +51,12 @@ public class WiremockTest {
     public void testGetUserFromMinikubeStub() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
         ObjectMapper objectMapper = new ObjectMapper();
+        String url = String.format("http://%s:%d/api/v1/user/get/all",
+                WireMockConfig.getWiremockHost(),
+                WireMockConfig.getWiremockPort());
 
-        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/user/get/all");
+        String jsonResponse = httpHelper.sendGetRequest(url);
+
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
 
         // JSON-строку преобразуем в Java-объект User
@@ -65,8 +73,11 @@ public class WiremockTest {
     public void testGetCoursesFromMinikubeStub() throws Exception {
         HttpHelper httpHelper = new HttpHelper();
         ObjectMapper objectMapper = new ObjectMapper();
+        String url = String.format("http://%s:%d/api/v1/course/get/all",
+                WireMockConfig.getWiremockHost(),
+                WireMockConfig.getWiremockPort());
 
-        String jsonResponse = httpHelper.sendGetRequest("http://" + WIREMOCK_HOST + ":" + WIREMOCK_PORT + "/api/v1/course/get/all");
+        String jsonResponse = httpHelper.sendGetRequest(url);
 
         assertNotNull(jsonResponse, "Ответ от WireMock не должен быть пустым");
         List<Course> courses = objectMapper.readValue(jsonResponse, new TypeReference<List<Course>>() {});
