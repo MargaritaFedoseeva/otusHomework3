@@ -1,20 +1,26 @@
 pipeline {
-     agent {
-            kubernetes {
-                yaml '''
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      labels:
-        some-label: otus-test-runner
-    '''
-            }
+    agent {
+        kubernetes {
+            yaml '''
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                some-label: otus-test-runner
+            spec:
+              containers:
+              # Используем дефолтный контейнер jnlp для запуска команд Jenkins
+              - name: jnlp
+                image: jenkins/inbound-agent:latest
+                tty: true
+            '''
         }
+    }
 
-         options {
-                timeout(time: 1, unit: 'HOURS')
-                ansiColor('xterm')
-            }
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        ansiColor('xterm')
+    }
 
     parameters {
         string(name: 'BRANCH', defaultValue: 'main', description: 'Ветка репозитория')
@@ -22,29 +28,26 @@ pipeline {
         string(name: 'WIREMOCK_PORT', defaultValue: '9021', description: 'Порт для WireMock')
     }
 
-    tools {
-        maven 'Maven 3.9.x' // Имя инсталляции Maven в Jenkins
-        jdk 'Java 17'       // Имя инсталляции Java в Jenkins
-    }
-
     stages {
         stage('WireMock Tests') {
-             steps {
+            steps {
+                // Если инструменты прокидываются в дефолтный контейнер,
+                // используем 'jnlp' вместо 'maven'
                 container('maven') {
                     withEnv([
-                       "WIREMOCK_HOST=${params.WIREMOCK_HOST}",
-                       "WIREMOCK_PORT=${params.WIREMOCK_PORT}"
-                        ]) {
+                        "WIREMOCK_HOST=${params.WIREMOCK_HOST}",
+                        "WIREMOCK_PORT=${params.WIREMOCK_PORT}"
+                    ]) {
                         sh 'mvn clean test'
-                        }
+                    }
                 }
-             }
+            }
         }
+    } // Скобка теперь правильно закрывает stages
 
-//     post {
-//         always {
-//             // Архивируем отчеты о тестировании для визуализации в Jenkins
-//             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
-//         }
-//     }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+        }
+    }
 }
