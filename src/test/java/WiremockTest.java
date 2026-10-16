@@ -28,7 +28,6 @@ public class WiremockTest {
     @BeforeAll
     public static void setup() {
         // Подключаем Java-клиент к WireMock, работающему в Minikube
-        RestAssured.filters(new AllureRestAssured());
         WireMock.configureFor(WireMockConfig.getWiremockHost(), WireMockConfig.getWiremockPort());
     }
 
