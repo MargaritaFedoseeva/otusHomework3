@@ -2,11 +2,16 @@ import dto.CategoryDto;
 import dto.PetDto;
 import dto.PetResponse;
 import dto.TagDto;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import services.PetApi;
 
@@ -15,7 +20,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+@Epic("Управление магазином питомцев")
+@Feature("Операции с питомцами")
 public class PetTest {
 
     private static Stream<Arguments> dataProvider() {
@@ -44,8 +50,9 @@ public class PetTest {
         );
     }
 
-    //Проверка создания питомца через POST /v2/pet с полным набором параметров в теле запроса, проверка тела ответа
     @Test
+    @DisplayName("Проверка создания питомца через POST /v2/pet ")
+    @Description("Проверка создания питомца через POST /v2/pet с полным набором параметров в теле запроса, проверка тела ответа")
     public void createValidPetCheckResponse() {
         PetApi petApi = new PetApi();
 
@@ -73,9 +80,12 @@ public class PetTest {
                 () -> assertEquals(petDto.getStatus(), petResponse.getStatus()));
     }
 
-    //Проверка создания питомца с несуществующим статусом и получение питомца
-    //Проверка создания питомца без передачи id в теле запроса и получение питомца
-    @ParameterizedTest
+    @ParameterizedTest(name = "Сценарий #{index}: {1}") // {1} подставит значение из второго столбца
+    @DisplayName("Проверка создания питомца") // Общее имя для группы
+    @CsvSource({
+            "с несуществующим статусом и получение питомца",
+            "без передачи id в теле запроса и получение питомца"
+    })
     @MethodSource("dataProvider")
     public void createPetCheckStatusCode(PetDto petDto, Integer statusCode) {
         PetApi petApi = new PetApi();
@@ -85,6 +95,7 @@ public class PetTest {
     }
 
     @Test
+    @DisplayName("Обновление питомца")
     public void updatePetCheckResponse() {
         PetApi petApi = new PetApi();
         CategoryDto categoryDto = CategoryDto.builder().id(1L).name("Собаки").build();
@@ -120,9 +131,12 @@ public class PetTest {
                 () -> assertEquals(petResponse.getStatus(), petActualResponse.getStatus()));
     }
 
-    //Получение питомцев с несуществующим статусом
-    //Получение питомцев со статусом available
-    @ParameterizedTest
+    @ParameterizedTest(name = "Сценарий #{index}: {1}") // {1} подставит значение из второго столбца
+    @DisplayName("Получение питомцев") // Общее имя для группы
+    @CsvSource({
+            "с несуществующим статусом",
+            "со статусом available"
+    })
     @MethodSource("dataProvider")
     public void getPetByStatus(PetDto petDto) {
         PetApi petApi = new PetApi();

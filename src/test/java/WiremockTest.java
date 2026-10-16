@@ -2,6 +2,8 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import config.WireMockConfig;
 import dto.Course;
 import dto.User;
+import io.qameta.allure.restassured.AllureRestAssured;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import wiremock.com.fasterxml.jackson.core.type.TypeReference;
@@ -20,6 +22,7 @@ public class WiremockTest {
     @BeforeAll
     public static void setup() {
         // Подключаем Java-клиент к WireMock, работающему в Minikube
+        RestAssured.filters(new AllureRestAssured());
         WireMock.configureFor(WireMockConfig.getWiremockHost(), WireMockConfig.getWiremockPort());
     }
 
