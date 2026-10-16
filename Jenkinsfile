@@ -1,5 +1,5 @@
 pipeline {
-    agent { label: 'java'}
+    agent { label 'java' }
 
     options {
         timeout(time: 1, unit: 'HOURS')
@@ -14,8 +14,6 @@ pipeline {
     stages {
         stage('WireMock Tests') {
             steps {
-                // Если инструменты прокидываются в дефолтный контейнер,
-                // используем 'jnlp' вместо 'maven'
                 container('maven') {
                     withEnv([
                         "WIREMOCK_HOST=${params.WIREMOCK_HOST}",
@@ -26,7 +24,7 @@ pipeline {
                 }
             }
         }
-    } // Скобка теперь правильно закрывает stages
+    }
 
     post {
         always {
