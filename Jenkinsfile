@@ -1,21 +1,5 @@
 pipeline {
-    agent {
-        kubernetes {
-            yaml '''
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                some-label: otus-test-runner
-            spec:
-              containers:
-              # Используем дефолтный контейнер jnlp для запуска команд Jenkins
-              - name: jnlp
-                image: jenkins/inbound-agent:latest
-                tty: true
-            '''
-        }
-    }
+    agent { label: 'java'}
 
     options {
         timeout(time: 1, unit: 'HOURS')
