@@ -80,12 +80,10 @@ public class PetTest {
                 () -> assertEquals(petDto.getStatus(), petResponse.getStatus()));
     }
 
-    @ParameterizedTest(name = "Сценарий #{index}: {1}") // {1} подставит значение из второго столбца
+    //Проверка создания питомца с несуществующим статусом и получение питомца
+    //Проверка создания питомца без передачи id в теле запроса и получение питомца
+    @ParameterizedTest(name = "Сценарий #{arguments}")
     @DisplayName("Проверка создания питомца") // Общее имя для группы
-    @CsvSource({
-            "с несуществующим статусом и получение питомца",
-            "без передачи id в теле запроса и получение питомца"
-    })
     @MethodSource("dataProvider")
     public void createPetCheckStatusCode(PetDto petDto, Integer statusCode) {
         PetApi petApi = new PetApi();
@@ -131,12 +129,10 @@ public class PetTest {
                 () -> assertEquals(petResponse.getStatus(), petActualResponse.getStatus()));
     }
 
-    @ParameterizedTest(name = "Сценарий #{index}: {1}") // {1} подставит значение из второго столбца
+    //Получение питомцев с несуществующим статусом
+    //Получение питомцев со статусом available
+    @ParameterizedTest(name = "Сценарий #{arguments}")
     @DisplayName("Получение питомцев") // Общее имя для группы
-    @CsvSource({
-            "с несуществующим статусом",
-            "со статусом available"
-    })
     @MethodSource("dataProvider")
     public void getPetByStatus(PetDto petDto) {
         PetApi petApi = new PetApi();

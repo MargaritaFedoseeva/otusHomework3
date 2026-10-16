@@ -26,7 +26,6 @@
         <proxy.host.property>192.168.0.7</proxy.host.property>
         <proxy.port.property>1081</proxy.port.property>
         <wiremock.version>3.13.2</wiremock.version>
-        <aspectj.version>1.9.22</aspectj.version>
         <allure.version>2.27.0</allure.version>
     </properties>
     <dependencyManagement>
@@ -99,22 +98,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.plugin.version}</version>
                 <configuration>
-                    <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                    </argLine>
                     <systemPropertyVariables>
                         <base.uri>${base.url.property}</base.uri>
                         <proxy.host>${proxy.host.property}</proxy.host>
                         <proxy.port>${proxy.port.property}</proxy.port>
                     </systemPropertyVariables>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjweaver</artifactId>
-                        <version>${aspectj.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>io.qameta.allure</groupId>
