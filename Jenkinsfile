@@ -6,12 +6,17 @@ pipeline {
     }
 
     parameters {
-        string(name: 'BRANCH', defaultValue: 'main', description: 'Ветка репозитория')
         string(name: 'WIREMOCK_HOST', defaultValue: 'wiremock.wiremock-ns.svc.cluster.local', description: 'Хост для WireMock')
         string(name: 'WIREMOCK_PORT', defaultValue: '9021', description: 'Порт для WireMock')
     }
 
     stages {
+        stage('Print Info') {
+                   steps {
+                       // Параметр BRANCH доступен здесь автоматически из шаблона!
+                       echo "Собираем ветку: ${params.BRANCH}"
+                   }
+               }
         stage('WireMock Tests') {
             steps {
                 container('maven') {

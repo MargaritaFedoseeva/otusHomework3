@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Epic("WireMock")
 @Feature("Выполнение запросов")
 public class WiremockTest {
-    private static final String WIREMOCK_HOST = "wiremock.local";
-    private static final int WIREMOCK_PORT = 80;
 
     @BeforeAll
     public static void setup() {
